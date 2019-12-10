@@ -5,7 +5,7 @@ import android.widget.TextView;
 
 public class ListNewsModel {
     ImageView galleryImage;
-    TextView author, title, details, time;
+    TextView author, title, details, time, content;
 
     public ListNewsModel(TextView author, TextView title, TextView details, TextView time, ImageView galleryImage) {
         this.galleryImage = galleryImage;
@@ -14,6 +14,13 @@ public class ListNewsModel {
         this.details = details;
         this.time = time;
         this.galleryImage = galleryImage;
+    }
+
+    public ListNewsModel(TextView author, TextView title, TextView time,TextView content) {
+        this.author = author;
+        this.title = title;
+        this.time = time;
+        this.content = content;
     }
 
     public ImageView getGalleryImage() {

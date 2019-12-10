@@ -16,7 +16,7 @@ import java.util.HashMap;
 
 class ListNewsAdapter extends BaseAdapter {
     private Activity activity;
-    private ArrayList<HashMap<String, String>> data;
+    private ArrayList<HashMap<String, String>>  data;
 
     public ListNewsAdapter(Activity getActivity, ArrayList<HashMap<String, String>> getData) {
         activity = getActivity;
@@ -57,22 +57,22 @@ class ListNewsAdapter extends BaseAdapter {
         newModel.details.setId(position);
         newModel.time.setId(position);
 
-        HashMap<String, String> song = new HashMap<String, String>();
-        song = data.get(position);
+        HashMap<String, String> listNewMap = new HashMap<String, String>();
+        listNewMap = data.get(position);
 
         try{
-            newModel.author.setText(song.get(MainActivity.AUTHOR));
-            newModel.title.setText(song.get(MainActivity.TITLE));
-            newModel.time.setText(song.get(MainActivity.PUBLISHEDAT));
-            newModel.details.setText(song.get(MainActivity.DESCRIPTION));
+            newModel.author.setText(listNewMap.get(MainActivity.AUTHOR));
+            newModel.title.setText(listNewMap.get(MainActivity.TITLE));
+            newModel.time.setText(listNewMap.get(MainActivity.PUBLISHEDAT));
+            newModel.details.setText(listNewMap.get(MainActivity.DESCRIPTION));
 
-            if(song.get(MainActivity.URLTOIMAGE).toString().length() < 5) {
+            if(listNewMap.get(MainActivity.URLTOIMAGE).toString().length() < 5) {
 
                 newModel.galleryImage.setVisibility(View.GONE);
 
             } else {
                 Picasso.get()
-                        .load(song.get(MainActivity.URLTOIMAGE))
+                        .load(listNewMap.get(MainActivity.URLTOIMAGE))
                         .resize(400, 400)
                         .centerCrop()
                         .into(newModel.galleryImage);

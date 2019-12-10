@@ -30,9 +30,9 @@ public class MainActivity extends AppCompatActivity {
     static final String AUTHOR = "author";
     static final String TITLE = "title";
     static final String DESCRIPTION = "description";
-    static final String URL = "url";
     static final String URLTOIMAGE = "urlToImage";
     static final String PUBLISHEDAT = "publishedAt";
+    static final String CONTENT= "content";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,9 +84,9 @@ public class MainActivity extends AppCompatActivity {
                         map.put(AUTHOR, jsonObject.optString(AUTHOR));
                         map.put(TITLE, jsonObject.optString(TITLE));
                         map.put(DESCRIPTION, jsonObject.optString(DESCRIPTION));
-                        map.put(URL, jsonObject.optString(URL));
                         map.put(URLTOIMAGE, jsonObject.optString(URLTOIMAGE));
                         map.put(PUBLISHEDAT, jsonObject.optString(PUBLISHEDAT));
+                        map.put(CONTENT, jsonObject.optString(CONTENT));
                         dataList.add(map);
                     }
                 } catch (JSONException e) {
@@ -99,9 +99,14 @@ public class MainActivity extends AppCompatActivity {
                 listNews.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     public void onItemClick(AdapterView<?> parent, View view,
                                             int position, long id) {
-                        Intent i = new Intent(MainActivity.this, DetailsActivity.class);
-                        i.putExtra("url", dataList.get(+position).get(URL));
-                        startActivity(i);
+                        System.out.println("Position" + position + dataList.get(position).get("author"));
+                        Intent intent = new Intent(MainActivity.this, DetailsActivity.class);
+                        intent.putExtra("image", dataList.get(position).get("urlToImage"));
+                        intent.putExtra("author", dataList.get(position).get("author"));
+                        intent.putExtra("title", dataList.get(position).get("title"));
+                        intent.putExtra("content", dataList.get(position).get("content"));
+                        intent.putExtra("publishedAt", dataList.get(position).get("publishAt"));
+                        startActivity(intent);
                     }
                 });
 

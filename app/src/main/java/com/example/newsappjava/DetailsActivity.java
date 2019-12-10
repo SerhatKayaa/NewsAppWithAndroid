@@ -4,49 +4,49 @@ package com.example.newsappjava;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
-
+import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.squareup.picasso.Picasso;
 
 
 public class DetailsActivity extends AppCompatActivity {
-    WebView webView;
     ProgressBar loader;
-    String url = "";
+    TextView author;
+    TextView content;
+    TextView title;
+    TextView publishedAt;
+    ImageView image;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
-
         Intent intent = getIntent();
-        url = intent.getStringExtra("url");
-        loader = findViewById(R.id.loader);
-        webView = findViewById(R.id.webView);
+        author = findViewById(R.id.detailAuthor);
+        content = findViewById(R.id.detailContent);
+        title = findViewById(R.id.detailTitle);
+        publishedAt = findViewById(R.id.detailPublishedAt);
+        image = findViewById(R.id.detailImage);
 
+        author.setText(intent.getStringExtra("author"));
+        content.setText(intent.getStringExtra("content"));
+        title.setText(intent.getStringExtra("title"));
+        publishedAt.setText(intent.getStringExtra("publishedAt"));
+        if(intent.getStringExtra("image").length() < 5) {
 
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.getSettings().setLoadWithOverviewMode(true);
-        webView.getSettings().setUseWideViewPort(true);
-        webView.setWebViewClient(new WebViewClient() {
+            image.setVisibility(View.GONE);
 
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                loader.setVisibility(View.VISIBLE);
-                view.loadUrl(url);
-
-                return true;
-            }
-
-            @Override
-            public void onPageFinished(WebView view, final String url) {
-                loader.setVisibility(View.GONE);
-            }
-        });
-
-        webView.loadUrl(url);
-
+        } else {
+            Picasso.get()
+                    .load(intent.getStringExtra("image"))
+                    .resize(400, 400)
+                    .centerCrop()
+                    .into(image);
+        }
+        System.out.println("DEBUGGING" + author + title);
     }
 }
