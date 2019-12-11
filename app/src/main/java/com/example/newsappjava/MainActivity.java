@@ -45,12 +45,9 @@ public class MainActivity extends AppCompatActivity {
         item = findViewById(R.id.item);
 
 
-        if (HelperService.isOnline(getApplicationContext())) {
-            getNews news = new getNews();
-            news.execute();
-        } else {
-            Toast.makeText(getApplicationContext(), "No Internet Connection", Toast.LENGTH_LONG).show();
-        }
+
+        getNews news = new getNews();
+        news.execute();
 
     }
 
@@ -64,55 +61,67 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() { super.onPreExecute(); }
 
-        protected String doInBackground(String... args) {
-            String xml = HelperService.getRequest("https://newsapi.org/v2/top-headlines?country=tr&apiKey=" + API_KEY);
-            return xml;
+        protected JSONArray doInBackground(String... args) {
+            if (HelperService.isOnline(getApplicationContext())) {
+                String xml = HelperService.getRequest("https://newsapi.org/v2/top-headlines?country=tr&apiKey=" + API_KEY);
+                //return xml;
+                JSONObject jsonResponse = new JSONObject(xml);
+                JSONArray jsonArray = jsonResponse.optJSONArray("articles");
+   
+                
+                return jsonArray
+            } else {
+                Database db = new Database(getApplicationContext()); // Db bağlantısı oluşturuyoruz. İlk seferde database oluşturulur.
+                haberler = db.haberler();//kitap listesini alıyoruz
+                db.close();
+                JSONArray jsArray = new JSONArray(haberler);
+                return jsArray
+            }
+            
         }
 
         @Override
-        protected void onPostExecute(String xml) {
+        protected void onPostExecute(JSONArray jsonArray) {
+            Database db = new Database(getApplicationContext());
+            db.resetTables();
+            try {
 
-            if (xml.length() > 10) {
 
-                try {
-                    JSONObject jsonResponse = new JSONObject(xml);
-                    JSONArray jsonArray = jsonResponse.optJSONArray("articles");
-
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        HashMap<String, String> map = new HashMap<>();
-                        map.put(AUTHOR, jsonObject.optString(AUTHOR));
-                        map.put(TITLE, jsonObject.optString(TITLE));
-                        map.put(DESCRIPTION, jsonObject.optString(DESCRIPTION));
-                        map.put(URLTOIMAGE, jsonObject.optString(URLTOIMAGE));
-                        map.put(PUBLISHEDAT, jsonObject.optString(PUBLISHEDAT));
-                        map.put(CONTENT, jsonObject.optString(CONTENT));
-                        dataList.add(map);
-                    }
-                } catch (JSONException e) {
-                    Toast.makeText(getApplicationContext(), "Unexpected error", Toast.LENGTH_SHORT).show();
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    HashMap<String, String> map = new HashMap<>();
+                    map.put(AUTHOR, jsonObject.optString(AUTHOR));
+                    map.put(TITLE, jsonObject.optString(TITLE));
+                    map.put(DESCRIPTION, jsonObject.optString(DESCRIPTION));
+                    map.put(URLTOIMAGE, jsonObject.optString(URLTOIMAGE));
+                    map.put(PUBLISHEDAT, jsonObject.optString(PUBLISHEDAT));
+                    map.put(CONTENT, jsonObject.optString(CONTENT));
+                    db.haberEkle(jsonObject.optString(TITLE), jsonObject.optString(AUTHOR), jsonObject.optString(DESCRIPTION),
+                                 jsonObject.optString(CONTENT), jsonObject.optString(PUBLISHEDAT), jsonObject.optString(URLTOIMAGE));
+                    dataList.add(map);
                 }
-
-                ListNewsAdapter adapter = new ListNewsAdapter(MainActivity.this, dataList);
-                listNews.setAdapter(adapter);
-
-                listNews.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    public void onItemClick(AdapterView<?> parent, View view,
-                                            int position, long id) {
-                        System.out.println("Position" + position + dataList.get(position).get("author"));
-                        Intent intent = new Intent(MainActivity.this, DetailsActivity.class);
-                        intent.putExtra("image", dataList.get(position).get("urlToImage"));
-                        intent.putExtra("author", dataList.get(position).get("author"));
-                        intent.putExtra("title", dataList.get(position).get("title"));
-                        intent.putExtra("content", dataList.get(position).get("content"));
-                        intent.putExtra("publishedAt", dataList.get(position).get("publishAt"));
-                        startActivity(intent);
-                    }
-                });
-
-            } else {
-                Toast.makeText(getApplicationContext(), "No news found", Toast.LENGTH_SHORT).show();
+            } catch (JSONException e) {
+                Toast.makeText(getApplicationContext(), "Unexpected error", Toast.LENGTH_SHORT).show();
             }
+
+            ListNewsAdapter adapter = new ListNewsAdapter(MainActivity.this, dataList);
+            listNews.setAdapter(adapter);
+
+            listNews.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                public void onItemClick(AdapterView<?> parent, View view,
+                                        int position, long id) {
+                    System.out.println("Position" + position + dataList.get(position).get("author"));
+                    Intent intent = new Intent(MainActivity.this, DetailsActivity.class);
+                    intent.putExtra("image", dataList.get(position).get("urlToImage"));
+                    intent.putExtra("author", dataList.get(position).get("author"));
+                    intent.putExtra("title", dataList.get(position).get("title"));
+                    intent.putExtra("content", dataList.get(position).get("content"));
+                    intent.putExtra("publishedAt", dataList.get(position).get("publishAt"));
+                    startActivity(intent);
+                }
+            });
+
+
         }
     }
 
