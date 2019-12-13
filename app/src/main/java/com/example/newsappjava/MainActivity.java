@@ -61,30 +61,39 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() { super.onPreExecute(); }
 
-        protected JSONArray doInBackground(String... args) {
-            if (HelperService.isOnline(getApplicationContext())) {
-                String xml = HelperService.getRequest("https://newsapi.org/v2/top-headlines?country=tr&apiKey=" + API_KEY);
-                //return xml;
-                JSONObject jsonResponse = new JSONObject(xml);
-                JSONArray jsonArray = jsonResponse.optJSONArray("articles");
-   
-                
-                return jsonArray
-            } else {
-                Database db = new Database(getApplicationContext()); // Db bağlantısı oluşturuyoruz. İlk seferde database oluşturulur.
-                haberler = db.haberler();//kitap listesini alıyoruz
-                db.close();
-                JSONArray jsArray = new JSONArray(haberler);
-                return jsArray
+        protected String doInBackground(String... args) {
+            try {
+                if (HelperService.isOnline(getApplicationContext())) {
+                    String xml = H elperService.getRequest("https://newsapi.org/v2/top-headlines?country=tr&apiKey=" + API_KEY);
+                    JSONObject jsonResponse = new JSONObject(xml);
+                    JSONArray jsonArray = jsonResponse.optJSONArray("articles");
+
+                    return jsonArray.toString();
+
+                } else {
+                    Database db = new Database(getApplicationContext());
+                    ArrayList<HashMap<String, String>> haberler = db.haberler();
+                    JSONArray jsArray = new JSONArray(haberler);
+                    return jsArray.toString();
+                }
             }
-            
+            catch (JSONException e) {
+                Toast.makeText(getApplicationContext(), "Unexpected error", Toast.LENGTH_SHORT).show();
+            }
+            return "Error";
         }
 
         @Override
-        protected void onPostExecute(JSONArray jsonArray) {
+        protected void onPostExecute(String xml) {
             Database db = new Database(getApplicationContext());
-            db.resetTables();
+            if (HelperService.isOnline(getApplicationContext())) {
+
+                db.resetTables();
+            }
+
+
             try {
+                JSONArray jsonArray = new JSONArray(xml);
 
 
                 for (int i = 0; i < jsonArray.length(); i++) {
@@ -96,8 +105,11 @@ public class MainActivity extends AppCompatActivity {
                     map.put(URLTOIMAGE, jsonObject.optString(URLTOIMAGE));
                     map.put(PUBLISHEDAT, jsonObject.optString(PUBLISHEDAT));
                     map.put(CONTENT, jsonObject.optString(CONTENT));
-                    db.haberEkle(jsonObject.optString(TITLE), jsonObject.optString(AUTHOR), jsonObject.optString(DESCRIPTION),
-                                 jsonObject.optString(CONTENT), jsonObject.optString(PUBLISHEDAT), jsonObject.optString(URLTOIMAGE));
+
+                    if (HelperService.isOnline(getApplicationContext())) {
+                        db.haberEkle(jsonObject.optString(TITLE), jsonObject.optString(AUTHOR), jsonObject.optString(DESCRIPTION),
+                                jsonObject.optString(CONTENT), jsonObject.optString(PUBLISHEDAT), jsonObject.optString(URLTOIMAGE));
+                    }
                     dataList.add(map);
                 }
             } catch (JSONException e) {
@@ -119,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
                     intent.putExtra("publishedAt", dataList.get(position).get("publishAt"));
                     startActivity(intent);
                 }
+
             });
 
 
