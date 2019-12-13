@@ -69,13 +69,13 @@ public class MainActivity extends AppCompatActivity {
                 JSONArray jsonArray = jsonResponse.optJSONArray("articles");
    
                 
-                return jsonArray
+                return jsonArray;
             } else {
                 Database db = new Database(getApplicationContext()); // Db bağlantısı oluşturuyoruz. İlk seferde database oluşturulur.
                 haberler = db.haberler();//kitap listesini alıyoruz
                 db.close();
                 JSONArray jsArray = new JSONArray(haberler);
-                return jsArray
+                return jsArray;
             }
             
         }
