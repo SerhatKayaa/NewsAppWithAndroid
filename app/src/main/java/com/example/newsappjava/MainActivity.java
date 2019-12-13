@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         protected String doInBackground(String... args) {
             try {
                 if (HelperService.isOnline(getApplicationContext())) {
-                    String xml = HelperService.getRequest("https://newsapi.org/v2/top-headlines?country=tr&apiKey=" + API_KEY);
+                    String xml = H elperService.getRequest("https://newsapi.org/v2/top-headlines?country=tr&apiKey=" + API_KEY);
                     JSONObject jsonResponse = new JSONObject(xml);
                     JSONArray jsonArray = jsonResponse.optJSONArray("articles");
 
@@ -95,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 JSONArray jsonArray = new JSONArray(xml);
 
+
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
                     HashMap<String, String> map = new HashMap<>();
@@ -104,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
                     map.put(URLTOIMAGE, jsonObject.optString(URLTOIMAGE));
                     map.put(PUBLISHEDAT, jsonObject.optString(PUBLISHEDAT));
                     map.put(CONTENT, jsonObject.optString(CONTENT));
+
                     if (HelperService.isOnline(getApplicationContext())) {
                         db.haberEkle(jsonObject.optString(TITLE), jsonObject.optString(AUTHOR), jsonObject.optString(DESCRIPTION),
                                 jsonObject.optString(CONTENT), jsonObject.optString(PUBLISHEDAT), jsonObject.optString(URLTOIMAGE));
@@ -129,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
                     intent.putExtra("publishedAt", dataList.get(position).get("publishAt"));
                     startActivity(intent);
                 }
+
             });
 
 
