@@ -10,11 +10,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class Database extends SQLiteOpenHelper {
 
-    // All Static variables
-    // Database Version
     private static final int DATABASE_VERSION = 1;
-
-    // Database Name
     private static final String DATABASE_NAME = "sqllite_database";//database ad�
 
     private static final String TABLE_NAME = "haberler";
@@ -85,21 +81,17 @@ public class Database extends SQLiteOpenHelper {
 
 
     public int getRowCount() {
-        // Bu method bu uygulamada kullan�lm�yor ama her zaman laz�m olabilir.Tablodaki row say�s�n� geri d�ner.
-        //Login uygulamas�nda kullanaca��z
         String countQuery = "SELECT  * FROM " + TABLE_NAME;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(countQuery, null);
         int rowCount = cursor.getCount();
         db.close();
         cursor.close();
-        // return row count
         return rowCount;
     }
 
 
     public void resetTables(){
-        //Bunuda uygulamada kullanm�yoruz. T�m verileri siler. tabloyu resetler.
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_NAME, null, null);
         db.close();

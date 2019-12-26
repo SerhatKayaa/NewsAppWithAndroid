@@ -21,7 +21,7 @@ import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
-    String API_KEY = "b730516c9c1c473ca584e058db9008fa";
+    String API_KEY = "";
     ListView listNews;
     ProgressBar loader;
     LinearLayout item;
@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         protected String doInBackground(String... args) {
             try {
                 if (HelperService.isOnline(getApplicationContext())) {
-                    String xml = H elperService.getRequest("https://newsapi.org/v2/top-headlines?country=tr&apiKey=" + API_KEY);
+                    String xml = HelperService.getRequest("https://newsapi.org/v2/top-headlines?country=tr&apiKey=" + API_KEY);
                     JSONObject jsonResponse = new JSONObject(xml);
                     JSONArray jsonArray = jsonResponse.optJSONArray("articles");
 
